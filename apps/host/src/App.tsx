@@ -12,6 +12,13 @@ const GET_SUPERGRAPH_DATA = gql`
       id
       name
       price
+      reviews {
+        id
+        body
+        author {
+          username
+        }
+      }
     }
   }
 `
@@ -36,7 +43,17 @@ function App() {
         <ul>
           {data?.products?.map((product: any) => (
             <li key={product.id}>
-              {product.name} - R$ {product.price.toFixed(2)}
+              <h3>{product.name} - R$ {product.price.toFixed(2)}</h3>
+              {product.reviews && product.reviews.length > 0 && (
+                <div style={{ paddingLeft: '20px', fontStyle: 'italic', color: '#666' }}>
+                  <h4>Avaliações:</h4>
+                  {product.reviews.map((review: any) => (
+                    <p key={review.id}>
+                      "{review.body}" — <strong>{review.author.username}</strong>
+                    </p>
+                  ))}
+                </div>
+              )}
             </li>
           ))}
         </ul>
