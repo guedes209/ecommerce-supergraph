@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write .",
-    "dev": "concurrently \"npm run start -w services/catalog\" \"npm run start -w services/users\" \"npm run start -w services/gateway\""
+    "dev": "concurrently \"npm run start -w services/catalog\" \"npm run start -w services/users\" \"npm run start -w services/gateway\" \"npm run dev -w @ecommerce/host\""
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
