@@ -1,0 +1,16 @@
+{
+  "name": "ecommerce-supergraph",
+  "version": "1.0.0",
+  "private": true,
+  "description": "E-commerce Supergraph with Apollo Federation and Micro-frontends",
+  "workspaces": [
+    "apps/*",
+    "services/*"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {}
+}
+
