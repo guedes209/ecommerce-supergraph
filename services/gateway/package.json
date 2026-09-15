@@ -1,0 +1,1 @@
+{"name":"@ecommerce/gateway","version":"1.0.0","scripts":{"start":"tsx index.ts"},"dependencies":{"@apollo/gateway":"^2.14.4","@apollo/server":"^5.5.1","graphql":"^16.14.2"}}
