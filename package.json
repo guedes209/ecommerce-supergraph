@@ -10,7 +10,8 @@
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write .",
-    "dev": "concurrently \"npm run start -w services/catalog\" \"npm run start -w services/users\" \"npm run start -w services/reviews\" \"npm run start -w services/gateway\" \"npm run dev -w @ecommerce/host\" \"npm run dev -w @ecommerce/catalog-ui\"",
+    "dev": "concurrently \"npm run start -w services/catalog\" \"npm run start -w services/users\" \"npm run start -w services/reviews\" \"npm run start -w services/gateway\" \"npm run dev:ui\"",
+    "dev:ui": "npm run build -w @ecommerce/catalog-ui && npm run build -w @ecommerce/host && concurrently \"npm run preview -w @ecommerce/host\" \"npm run preview -w @ecommerce/catalog-ui\"",
     "typecheck": "tsc -b"
   },
   "devDependencies": {

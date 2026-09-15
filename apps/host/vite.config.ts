@@ -1,12 +1,12 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-// @ts-expect-error - The plugin typings conflict with nodenext module resolution
 import federation from '@originjs/vite-plugin-federation'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    // @ts-expect-error - The plugin typings conflict with nodenext module resolution
     federation({
       name: 'host',
       remotes: {
@@ -17,5 +17,9 @@ export default defineConfig({
   ],
   build: {
     target: 'esnext'
+  },
+  preview: {
+    port: 5173,
+    strictPort: true
   }
 })
