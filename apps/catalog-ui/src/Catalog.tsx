@@ -57,7 +57,24 @@ interface SupergraphData {
   products: Product[]
 }
 
-export default function Catalog({ currentUser }: { currentUser: { id: string } }) {
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
+
+// Criação do Client isolado para o Micro-frontend
+const catalogClient = new ApolloClient({
+  link: new HttpLink({ uri: 'http://localhost:4000/' }),
+  cache: new InMemoryCache(),
+})
+
+export default function CatalogRemoteWrapper({ currentUser }: { currentUser: { id: string } }) {
+  return (
+    <ApolloProvider client={catalogClient}>
+      <Catalog currentUser={currentUser} />
+    </ApolloProvider>
+  )
+}
+
+function Catalog({ currentUser }: { currentUser: { id: string } }) {
   const { loading, error, data, refetch } = useQuery<SupergraphData>(GET_PRODUCTS)
   const [createProduct] = useMutation(CREATE_PRODUCT)
   const [createReview] = useMutation(CREATE_REVIEW)
