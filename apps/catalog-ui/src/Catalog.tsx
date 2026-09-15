@@ -109,7 +109,7 @@ function Catalog({ currentUser }: { currentUser: { id: string } }) {
 
   return (
     <div style={{ padding: '20px', border: '2px solid #646cff', borderRadius: '8px', marginTop: '20px' }}>
-      <h2 style={{ color: '#646cff' }}>📦 MFE Remoto: Catálogo</h2>
+      <h2 style={{ color: 'red' }}>📦 MFE Remoto: Catálogo</h2>
       
       <form onSubmit={handleCreateProduct} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <input placeholder="Nome do produto" value={newProductName} onChange={e => setNewProductName(e.target.value)} required />

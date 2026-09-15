@@ -12,11 +12,12 @@ export default defineConfig({
       remotes: {
         catalog: 'http://localhost:5174/assets/remoteEntry.js',
       },
-      shared: ['react', 'react-dom', '@apollo/client', 'graphql']
+      shared: ['react', 'react-dom']
     })
   ],
   build: {
-    target: 'esnext'
+    target: 'esnext',
+    minify: false
   },
   preview: {
     port: 5173,

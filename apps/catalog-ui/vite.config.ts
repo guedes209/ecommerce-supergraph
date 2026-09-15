@@ -13,7 +13,7 @@ export default defineConfig({
       exposes: {
         './Catalog': './src/Catalog.tsx',
       },
-      shared: ['react', 'react-dom', '@apollo/client', 'graphql']
+      shared: ['react', 'react-dom']
     })
   ],
   server: {
@@ -24,6 +24,7 @@ export default defineConfig({
     strictPort: true
   },
   build: {
-    target: 'esnext'
+    target: 'esnext',
+    minify: false
   }
 })
