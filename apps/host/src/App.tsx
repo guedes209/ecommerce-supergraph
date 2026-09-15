@@ -1,150 +1,48 @@
-import { useState } from 'react'
-import { useQuery, useMutation } from '@apollo/client/react'
+import React, { Suspense } from 'react'
+import { useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import './App.css'
 
-const GET_SUPERGRAPH_DATA = gql`
-  query GetSupergraphData {
+// O Host agora carrega apenas os dados vitais para o Shell (ex: Usuário Logado)
+const GET_ME = gql`
+  query GetMe {
     me {
       id
       username
     }
-    products {
-      id
-      name
-      price
-      reviews {
-        id
-        body
-        author {
-          username
-        }
-      }
-    }
   }
 `
-
-const CREATE_PRODUCT = gql`
-  mutation CreateProduct($name: String!, $price: Float!) {
-    createProduct(name: $name, price: $price) {
-      id
-      name
-      price
-    }
-  }
-`
-
-const CREATE_REVIEW = gql`
-  mutation CreateReview($productId: ID!, $authorId: ID!, $body: String!) {
-    createReview(productId: $productId, authorId: $authorId, body: $body) {
-      id
-      body
-    }
-  }
-`
-
-interface Review {
-  id: string
-  body: string
-  author: {
-    username: string
-  }
-}
-
-interface Product {
-  id: string
-  name: string
-  price: number
-  reviews: Review[]
-}
 
 interface SupergraphData {
   me: { id: string; username: string }
-  products: Product[]
 }
 
+// Importação assíncrona do Micro-frontend Remoto!
+const CatalogRemote = React.lazy(() => import('catalog/Catalog'))
+
 function App() {
-  const { loading, error, data, refetch } = useQuery<SupergraphData>(GET_SUPERGRAPH_DATA)
-  const [createProduct] = useMutation(CREATE_PRODUCT)
-  const [createReview] = useMutation(CREATE_REVIEW)
+  const { loading, error, data } = useQuery<SupergraphData>(GET_ME)
 
-  const [newProductName, setNewProductName] = useState('')
-  const [newProductPrice, setNewProductPrice] = useState('')
-  const [reviewBody, setReviewBody] = useState<{ [key: string]: string }>({})
-
-  if (loading) return <p>Carregando dados do Supergraph...</p>
-  if (error) return <p>Erro: {error.message}</p>
-
-  const handleCreateProduct = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await createProduct({
-      variables: { name: newProductName, price: parseFloat(newProductPrice) }
-    })
-    setNewProductName('')
-    setNewProductPrice('')
-    refetch()
-  }
-
-  const handleCreateReview = async (productId: string) => {
-    const body = reviewBody[productId]
-    if (!body) return
-    
-    await createReview({
-      variables: { productId, authorId: data?.me.id, body }
-    })
-    setReviewBody({ ...reviewBody, [productId]: '' })
-    refetch()
-  }
+  if (loading) return <p>Carregando Shell (Host)...</p>
+  if (error) return <p>Erro no Host: {error.message}</p>
 
   return (
     <>
-      <h1>E-commerce Supergraph Host</h1>
+      <h1>E-commerce Shell (Host)</h1>
       
-      <div className="card">
-        <h2>Usuário Logado (Users DB)</h2>
+      <div className="card" style={{ border: '2px solid #4CAF50' }}>
+        <h2 style={{ color: '#4CAF50' }}>👤 Dados Locais (Host)</h2>
         <p>Logado como: <strong>{data?.me?.username}</strong></p>
       </div>
 
-      <div className="card">
-        <h2>Adicionar Produto (Catalog DB)</h2>
-        <form onSubmit={handleCreateProduct} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-          <input placeholder="Nome do produto" value={newProductName} onChange={e => setNewProductName(e.target.value)} required />
-          <input type="number" placeholder="Preço" value={newProductPrice} onChange={e => setNewProductPrice(e.target.value)} required />
-          <button type="submit">Adicionar</button>
-        </form>
-
-        <h2>Catálogo de Produtos</h2>
-        <ul>
-          {data?.products?.map((product: Product) => (
-            <li key={product.id} style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
-              <h3>{product.name} - R$ {product.price.toFixed(2)}</h3>
-              
-              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                <input 
-                  placeholder="Escrever avaliação..." 
-                  value={reviewBody[product.id] || ''} 
-                  onChange={e => setReviewBody({ ...reviewBody, [product.id]: e.target.value })}
-                />
-                <button onClick={() => handleCreateReview(product.id)}>Enviar (Reviews DB)</button>
-              </div>
-
-              {product.reviews && product.reviews.length > 0 && (
-                <div style={{ paddingLeft: '20px', fontStyle: 'italic', color: '#666', marginTop: '10px' }}>
-                  <h4>Avaliações:</h4>
-                  {product.reviews.map((review: Review) => (
-                    <p key={review.id}>
-                      "{review.body}" — <strong>{review.author?.username || 'Desconhecido'}</strong>
-                    </p>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+      <div style={{ marginTop: '40px' }}>
+        {/* Aqui nós injetamos o Remote Component e o Suspense mostra o Fallback enquanto baixa da rede */}
+        <Suspense fallback={<p style={{ color: '#646cff', fontStyle: 'italic' }}>⬇️ Baixando Catálogo do MFE Remoto (Porta 5174)...</p>}>
+          <CatalogRemote currentUser={{ id: data?.me.id ?? '' }} />
+        </Suspense>
       </div>
     </>
   )
 }
 
 export default App
-
