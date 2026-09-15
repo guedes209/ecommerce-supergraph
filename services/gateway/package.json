@@ -1,1 +1,1 @@
-{"name":"@ecommerce/gateway","version":"1.0.0","scripts":{"start":"wait-on tcp:4001 tcp:4002 tcp:4003 && tsx index.ts"},"dependencies":{"@apollo/gateway":"^2.14.4","@apollo/server":"^5.5.1","graphql":"^16.14.2"}}
+{"name":"@ecommerce/gateway","version":"1.0.0","scripts":{"start":"wait-on tcp:4001 tcp:4002 tcp:4003 && tsx watch index.ts"},"dependencies":{"@apollo/gateway":"^2.14.4","@apollo/server":"^5.5.1","graphql":"^16.14.2"}}

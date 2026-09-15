@@ -1,0 +1,17 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./reviews.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+model Review {
+  id        String @id @default(uuid())
+  body      String
+  authorId  String
+  productId String
+}
+

@@ -2,7 +2,7 @@
   "name": "@ecommerce/reviews",
   "version": "1.0.0",
   "scripts": {
-    "start": "tsx index.ts"
+    "start": "tsx watch index.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",

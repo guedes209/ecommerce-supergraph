@@ -1,1 +1,1 @@
-{"name":"@ecommerce/users","version":"1.0.0","scripts":{"start":"tsx index.ts"},"dependencies":{"@apollo/server":"^5.5.1","@apollo/subgraph":"^2.15.1","graphql":"^16.14.2","graphql-tag":"^2.12.7"}}
+{"name":"@ecommerce/users","version":"1.0.0","scripts":{"start":"tsx watch index.ts"},"dependencies":{"@apollo/server":"^5.5.1","@apollo/subgraph":"^2.15.1","graphql":"^16.14.2","graphql-tag":"^2.12.7"}}

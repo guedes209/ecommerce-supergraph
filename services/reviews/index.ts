@@ -2,6 +2,9 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import gql from 'graphql-tag';
+import { PrismaClient } from './prisma/generated/client';
+
+const prisma = new PrismaClient();
 
 const typeDefs = gql`
   extend schema
@@ -14,28 +17,30 @@ const typeDefs = gql`
     product: Product!
   }
 
-  # Estendemos o User que vive em outro serviço
   type User @key(fields: "id") {
     id: ID!
     reviews: [Review!]!
   }
 
-  # Estendemos o Product que vive em outro serviço
   type Product @key(fields: "id") {
     id: ID!
     reviews: [Review!]!
   }
+
+  type Mutation {
+    createReview(productId: ID!, authorId: ID!, body: String!): Review!
+  }
 `;
 
-const reviews = [
-  { id: '1', authorId: '1', productId: '1', body: 'Excelente notebook, super rápido!' },
-  { id: '2', authorId: '1', productId: '2', body: 'Teclado muito barulhento.' },
-];
-
 const resolvers = {
+  Mutation: {
+    createReview: (_: unknown, { productId, authorId, body }: { productId: string; authorId: string; body: string }) => {
+      return prisma.review.create({
+        data: { productId, authorId, body },
+      });
+    },
+  },
   Review: {
-    // Resolvemos as referências cruzadas devolvendo apenas o tipo e o ID.
-    // O Gateway vai se virar para buscar o resto dos dados nos serviços donos!
     author(review: { authorId: string }) {
       return { __typename: 'User', id: review.authorId };
     },
@@ -45,12 +50,12 @@ const resolvers = {
   },
   User: {
     reviews(user: { id: string }) {
-      return reviews.filter((review) => review.authorId === user.id);
+      return prisma.review.findMany({ where: { authorId: user.id } });
     },
   },
   Product: {
     reviews(product: { id: string }) {
-      return reviews.filter((review) => review.productId === product.id);
+      return prisma.review.findMany({ where: { productId: product.id } });
     },
   },
 };

@@ -2,6 +2,9 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import gql from 'graphql-tag';
+import { PrismaClient } from './prisma/generated/client';
+
+const prisma = new PrismaClient();
 
 const typeDefs = gql`
   extend schema
@@ -17,17 +20,20 @@ const typeDefs = gql`
   }
 `;
 
-const users = [
-  { id: '1', username: 'bruno_dev' },
-];
-
 const resolvers = {
   Query: {
-    me: () => users[0],
+    me: async () => {
+      // Injeta um usuário padrão caso o banco esteja vazio
+      let user = await prisma.user.findFirst();
+      if (!user) {
+        user = await prisma.user.create({ data: { username: 'bruno_dev' } });
+      }
+      return user;
+    },
   },
   User: {
-    __resolveReference(user: { id: string }) {
-      return users.find((u) => u.id === user.id);
+    __resolveReference(reference: { id: string }) {
+      return prisma.user.findUnique({ where: { id: reference.id } });
     },
   },
 };

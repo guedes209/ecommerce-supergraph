@@ -9,6 +9,7 @@ const gateway = new ApolloGateway({
       { name: 'users', url: 'http://localhost:4002' },
       { name: 'reviews', url: 'http://localhost:4003' },
     ],
+    pollIntervalInMs: 3000, // Gateway vai checar mudanças a cada 3 segundos!
   }),
 });
 

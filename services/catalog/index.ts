@@ -2,6 +2,9 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import gql from 'graphql-tag';
+import { PrismaClient } from './prisma/generated/client';
+
+const prisma = new PrismaClient();
 
 const typeDefs = gql`
   extend schema
@@ -17,21 +20,27 @@ const typeDefs = gql`
     products: [Product!]!
     product(id: ID!): Product
   }
-`;
 
-const products = [
-  { id: '1', name: 'Notebook Pro', price: 2999.99 },
-  { id: '2', name: 'Teclado Mecânico', price: 150.00 },
-];
+  type Mutation {
+    createProduct(name: String!, price: Float!): Product!
+  }
+`;
 
 const resolvers = {
   Query: {
-    products: () => products,
-    product: (_: unknown, { id }: { id: string }) => products.find((p) => p.id === id),
+    products: () => prisma.product.findMany(),
+    product: (_: unknown, { id }: { id: string }) => prisma.product.findUnique({ where: { id } }),
+  },
+  Mutation: {
+    createProduct: (_: unknown, { name, price }: { name: string; price: number }) => {
+      return prisma.product.create({
+        data: { name, price },
+      });
+    },
   },
   Product: {
-    __resolveReference(product: { id: string }) {
-      return products.find((p) => p.id === product.id);
+    __resolveReference(reference: { id: string }) {
+      return prisma.product.findUnique({ where: { id: reference.id } });
     },
   },
 };
